@@ -2,10 +2,24 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/lll"
+    android:id="@+id/lll3"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
+
+    <com.example.flappybrid.fg.BridLayout
+        android:id="@+id/lll2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </com.example.flappybrid.fg.BridLayout>
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="quq"
+        android:text="Button" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -13,6 +27,7 @@
         android:text="Hello World!" />
 
     <com.example.flappybrid.bg.BgLayout
+        android:id="@+id/lll"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

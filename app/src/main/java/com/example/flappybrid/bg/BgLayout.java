@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 
 import com.example.flappybrid.utils.ScreenUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -20,16 +21,17 @@ public class BgLayout extends FrameLayout {
     Context context;
     AttributeSet attrs;
     Timer timer;
-//    List<BarView> bv;
+    List<ValueAnimator> va = new ArrayList<>( );
     public BgLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
         this.context = context;
         this.attrs = attrs;
-        start();
+//        start();
     }
     public void start()
     {
+        removeAllViews();
         timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
@@ -45,7 +47,10 @@ public class BgLayout extends FrameLayout {
     }
     public void stop()
     {
-//        timer.
+        if(timer!=null)
+        timer.cancel();
+        for (int i = 0; i< va.size();i++)
+            va.get(i).cancel();
     }
     public void createBar()
     {
@@ -54,6 +59,7 @@ public class BgLayout extends FrameLayout {
         bv.x = 500;
         bv.y = 500;
         ValueAnimator an = ValueAnimator.ofFloat(ScreenUtil.getScreenWidth(context),-bv.bw);
+        va.add(an);
         an.setInterpolator(new LinearInterpolator());
         an.setDuration(5000);
         an.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -64,6 +70,7 @@ public class BgLayout extends FrameLayout {
                 if(bv.x<=-bv.bw)
                 {
                     removeView(bv);
+                    va.remove(an);
                     //bv = null;
                 }
             }
