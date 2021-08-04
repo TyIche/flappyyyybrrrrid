@@ -13,7 +13,7 @@ import com.example.flappybrid.R;
 public class BarView extends View {
     Bitmap bm;
     Paint paint;
-    float bw,bh,x,y;
+    public float bw,bh,x,y;
     float INF = 100000000000000000000000000000000000000f;
     public BarView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);

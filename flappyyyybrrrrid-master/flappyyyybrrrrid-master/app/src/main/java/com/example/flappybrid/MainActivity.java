@@ -29,18 +29,28 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import com.example.flappybrid.fg.brid;
+import com.example.flappybrid.vector.*;
 
 public class MainActivity extends BaseActivity implements ViewTreeObserver.OnGlobalLayoutListener {
     private static final String TAG = "FaceAttrPreviewActivity";
     private CameraHelper cameraHelper;
     private DrawHelper drawHelper;
+
     private Camera.Size previewSize;
+    private TextView tvv;
+    long iii;
     private Integer rgbCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
     private FaceEngine faceEngine;
     private int afCode = -1;
@@ -60,12 +70,82 @@ public class MainActivity extends BaseActivity implements ViewTreeObserver.OnGlo
             Manifest.permission.READ_PHONE_STATE
     };
     BgLayout bl;
-    BridLayout brl;
+    BridLayout brll;
+    Timer oncli;
+    brid brl;
+    GV gv;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        iii = 0L;
+        tvv=findViewById(R.id.tvv);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
+
+        //gv.brl = findViewById(R.id.lll2);
+        setContentView(R.layout.activity_main);
+        oncli=new Timer();
+        oncli.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        GV gvv=findViewById(R.id.gv);
+                        BgLayout bl = findViewById(R.id.lll);
+
+                        //ap => anchor point
+                        Vector ap= new Vector(brl.getX()+brl.getWidth()/2,
+                                brl.getY()+brl.getHeight()/2);
+
+                        Vector [] ve =
+                        {new Vector(brl.getX(),brl.getY()),
+                        new Vector(brl.getX()+brl.getWidth(),brl.getY()),
+                        new Vector(brl.getX()+brl.getWidth(),brl.getY()+brl.getHeight()),
+                        new Vector(brl.getX(),brl.getY()+brl.getHeight())};
+                        //Log.d("deb",String.valueOf(ve[0].x));
+                        for(int i = 0;i < 4;i++)
+                        {
+
+                            Vector v_ = new Vector(brl.getRotation()+i*90+45);
+                            v_.x*=(200/Math.sqrt(2));v_.y*=(200/Math.sqrt(2));
+                            ve[i].x = ap.x+(v_.x);
+                            ve[i].y = ap.y+(v_.y);
+                            //Log.d("deb",String.valueOf(i));
+                        }
+                        Recc brid_ = new Recc(ve);
+
+                        List<Recc> rcs = new ArrayList<>();
+                        for(int i = 0; i < bl.bvs.size();i++)
+                        {
+                            float x = bl.bvs.get(i).x,y = bl.bvs.get(i).y;
+                            float w = bl.bvs.get(i).bw,h = bl.bvs.get(i).bh;
+                            Vector a = new Vector(x,y);
+                            Vector b = new Vector(x+w,y);
+                            Vector c = new Vector(x+w,y+h);
+                            Vector d = new Vector(x,y+h);
+                            Vector [] tmp = {a,b,c,d};
+                            if(i == 0) gvv.gove2(tmp);
+                            rcs.add(new Recc(a,b,c,d));
+                        }
+                        int f= 0;
+                        for(int i = 0;i < rcs.size();i++)
+                        {
+                            if(!Recc.safee(brid_,rcs.get(i)))
+                            {
+                                f = 1;
+                                Log.d("chuang","gg");
+                            }
+                        }
+                        if(f == 0)
+                        {
+                            Log.d("chuang","ok");
+                        }
+                        gvv.gove(ve);
+                        gvv.postInvalidate();
+                    }
+                });
+            }
+        },0L,100L);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WindowManager.LayoutParams attributes = getWindow().getAttributes();
@@ -76,21 +156,34 @@ public class MainActivity extends BaseActivity implements ViewTreeObserver.OnGlo
         // Activity启动后就锁定为启动时的方向
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
 
-//        previewView = findViewById(R.id.texture_preview);
-//        faceRectView = findViewById(R.id.face_rect_view);
-//        //在布局结束后才做初始化操作
-//        previewView.getViewTreeObserver().addOnGlobalLayoutListener(this);
+        previewView = findViewById(R.id.texture_preview);
+        faceRectView = findViewById(R.id.face_rect_view);
+        //在布局结束后才做初始化操作
+        previewView.getViewTreeObserver().addOnGlobalLayoutListener(this);
 
 
 
         bl = findViewById(R.id.lll);
         bl.start();
 
-        brl = findViewById(R.id.lll2);
-        brl.start();
+        brll = findViewById(R.id.lll2);
+        brl = brll.brid;
+        brll.start();
 
 
     }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if(System.currentTimeMillis() - iii <= 30) return super.onTouchEvent(event);
+        iii = System.currentTimeMillis();
+        Log.d("quq",String.valueOf(event.getX())+String.valueOf(event.getY()));
+        brll.movee(event.getX(),event.getY());
+//        brl.movee(500,500);
+        //tvv.setText(String.valueOf(event.getX())+String.valueOf(event.getY()));
+        return super.onTouchEvent(event);
+    }
+
     private void initEngine() {
         faceEngine = new FaceEngine();
         afCode = faceEngine.init(this, DetectMode.ASF_DETECT_MODE_VIDEO, ConfigUtil.getFtOrient(this),
