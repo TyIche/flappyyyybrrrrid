@@ -22,6 +22,7 @@ public class BgLayout extends FrameLayout {
     AttributeSet attrs;
     Timer timer;
     List<ValueAnimator> va = new ArrayList<>( );
+    List<BarView> bvs = new ArrayList<>();
     public BgLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
@@ -55,6 +56,7 @@ public class BgLayout extends FrameLayout {
     public void createBar()
     {
         BarView bv = new BarView(context,attrs);
+        bvs.add(bv);
         addView(bv);
         bv.x = 500;
         bv.y = 500;
@@ -71,6 +73,7 @@ public class BgLayout extends FrameLayout {
                 {
                     removeView(bv);
                     va.remove(an);
+                    bvs.remove(bv);
                     //bv = null;
                 }
             }

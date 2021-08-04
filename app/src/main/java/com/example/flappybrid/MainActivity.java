@@ -29,18 +29,25 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import com.example.flappybrid.vector.*;
 
 public class MainActivity extends BaseActivity implements ViewTreeObserver.OnGlobalLayoutListener {
     private static final String TAG = "FaceAttrPreviewActivity";
     private CameraHelper cameraHelper;
     private DrawHelper drawHelper;
     private Camera.Size previewSize;
+    private TextView tvv;
+    long iii;
     private Integer rgbCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
     private FaceEngine faceEngine;
     private int afCode = -1;
@@ -61,11 +68,39 @@ public class MainActivity extends BaseActivity implements ViewTreeObserver.OnGlo
     };
     BgLayout bl;
     BridLayout brl;
+    Timer oncli;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        iii = 0L;
+        tvv=findViewById(R.id.tvv);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        oncli=new Timer();
+        oncli.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //ap => anchor point
+                        Vector ap= new Vector(brl.getX()+brl.getWidth()/2,
+                                brl.getY()+brl.getHeight()/2);
 
+                        Vector [] ve = {ap,ap,ap,ap};
+                        for(int i = 0;i < 4;i++)
+                        {
+                            Vector v_ = new Vector(ap,brl.getRotation()+i*90);
+                            v_.x*=(200/Math.sqrt(2));v_.y*=(200/Math.sqrt(2));
+                            ve[i].x = (v_.x);
+                            ve[i].y = (v_.y);
+                        }
+                        Recc brid_ = new Recc(ve);
+                        
+                    }
+                });
+            }
+        },0L,100L);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WindowManager.LayoutParams attributes = getWindow().getAttributes();
@@ -91,6 +126,18 @@ public class MainActivity extends BaseActivity implements ViewTreeObserver.OnGlo
 
 
     }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if(System.currentTimeMillis() - iii <= 30) return super.onTouchEvent(event);
+        iii = System.currentTimeMillis();
+        Log.d("quq",String.valueOf(event.getX())+String.valueOf(event.getY()));
+        brl.movee(event.getX(),event.getY());
+//        brl.movee(500,500);
+        //tvv.setText(String.valueOf(event.getX())+String.valueOf(event.getY()));
+        return super.onTouchEvent(event);
+    }
+
     private void initEngine() {
         faceEngine = new FaceEngine();
         afCode = faceEngine.init(this, DetectMode.ASF_DETECT_MODE_VIDEO, ConfigUtil.getFtOrient(this),

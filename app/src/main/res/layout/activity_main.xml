@@ -7,6 +7,16 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <TextureView
+        android:id="@+id/texture_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.example.flappybrid.cam.widget.FaceRectView
+        android:id="@+id/face_rect_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <com.example.flappybrid.fg.BridLayout
         android:id="@+id/lll2"
         android:layout_width="match_parent"
@@ -32,5 +42,11 @@
         android:layout_height="match_parent">
 
     </com.example.flappybrid.bg.BgLayout>
+
+    <TextView
+        android:id="@+id/tvv"
+        android:layout_width="205dp"
+        android:layout_height="136dp"
+        android:text="TextView" />
 
 </FrameLayout>
